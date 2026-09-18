@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { ensureDefaultReferralCode } from "@/lib/referral";
 import { registerSchema, type RegisterInput } from "@/lib/validations";
 
 export async function registerUser(data: RegisterInput) {
@@ -21,28 +22,36 @@ export async function registerUser(data: RegisterInput) {
     return { success: false, error: `This ${field} is already taken` };
   }
 
-  // Validate required referral code
-  const code = await prisma.referralCode.findUnique({
-    where: { code: referralCode.trim().toUpperCase() },
-  });
+  let codeId: string | undefined;
 
-  if (!code) {
-    return { success: false, error: "Invalid referral code" };
-  }
-  if (!code.active) {
-    return { success: false, error: "This referral code is no longer active" };
-  }
-  if (code.usedCount >= code.maxUses) {
-    return { success: false, error: "This referral code has already been used" };
+  // Validate optional referral code
+  if (referralCode && referralCode.trim()) {
+    await ensureDefaultReferralCode();
+    const code = await prisma.referralCode.findUnique({
+      where: { code: referralCode.trim().toUpperCase() },
+    });
+
+    if (!code) {
+      return { success: false, error: "Invalid referral code" };
+    }
+    if (!code.active) {
+      return { success: false, error: "This referral code is no longer active" };
+    }
+    if (code.usedCount >= code.maxUses) {
+      return { success: false, error: "This referral code has already been used" };
+    }
+    codeId = code.id;
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
 
   const user = await prisma.$transaction(async (tx) => {
-    await tx.referralCode.update({
-      where: { id: code.id },
-      data: { usedCount: { increment: 1 } },
-    });
+    if (codeId) {
+      await tx.referralCode.update({
+        where: { id: codeId },
+        data: { usedCount: { increment: 1 } },
+      });
+    }
 
     return tx.user.create({
       data: {
@@ -52,7 +61,7 @@ export async function registerUser(data: RegisterInput) {
         countryCode,
         phone,
         passwordHash,
-        referralCodeId: code.id,
+        referralCodeId: codeId,
         profile: {
           create: {},
         },

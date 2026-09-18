@@ -52,3 +52,33 @@ export async function saveActivity(id: string | null, input: unknown) {
   revalidatePath("/admin/activities");
   return { success: true };
 }
+
+export async function extendActivity(id: string, days = 7) {
+  const admin = await requireAdmin();
+  if (!id.trim()) return { success: false, error: "Invalid activity" };
+
+  try {
+    const activity = await prisma.activity.update({
+      where: { id },
+      data: {
+        endAt: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+        active: true,
+      },
+    });
+    await prisma.adminAction.create({
+      data: {
+        adminId: admin.id,
+        action: "EXTEND_ACTIVITY",
+        entityType: "Activity",
+        entityId: activity.id,
+        details: { days },
+      },
+    });
+  } catch {
+    return { success: false, error: "Unable to extend activity" };
+  }
+
+  revalidatePath("/admin/activities");
+  revalidatePath(`/activities/${id}`);
+  return { success: true };
+}

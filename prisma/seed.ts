@@ -397,12 +397,16 @@ async function seedActivities() {
   const now = Date.now();
   const activity = await prisma.activity.upsert({
     where: { slug: "airborne-activities" },
-    update: {},
+    update: {
+      startAt: new Date(now - 60 * 60 * 1000),
+      endAt: new Date(now + 365 * 24 * 60 * 60 * 1000),
+      active: true,
+    },
     create: {
       slug: "airborne-activities",
       title: "Airborne activities",
       startAt: new Date(now - 60 * 60 * 1000),
-      endAt: new Date(now + 24 * 60 * 60 * 1000),
+      endAt: new Date(now + 365 * 24 * 60 * 60 * 1000),
       maxQuantity: 10,
       active: true,
     },

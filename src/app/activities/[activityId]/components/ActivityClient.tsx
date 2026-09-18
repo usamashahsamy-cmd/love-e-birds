@@ -69,9 +69,13 @@ export default function ActivityClient({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(initialSelection?.productId ?? null);
   const [quantity, setQuantity] = useState(initialSelection?.quantity ?? 1);
+  const [customBalance, setCustomBalance] = useState(() => {
+    const initialProduct = products.find((p) => p.id === initialSelection?.productId);
+    return initialProduct ? initialProduct.ticketCost * (initialSelection?.quantity ?? 1) : 0;
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
@@ -140,6 +144,10 @@ export default function ActivityClient({
       return;
     }
     setSelectedId(id);
+    const product = products.find((p) => p.id === id);
+    if (product) {
+      setCustomBalance(product.ticketCost * quantity);
+    }
     startTransition(async () => {
       await saveSelection({ activityId: activity.id, productId: id, quantity });
     });
@@ -149,6 +157,9 @@ export default function ActivityClient({
     const next = Math.min(activity.maxQuantity, Math.max(1, quantity + delta));
     if (next === quantity) return;
     setQuantity(next);
+    if (selected) {
+      setCustomBalance(selected.ticketCost * next);
+    }
     if (selectedId) {
       startTransition(async () => {
         await saveSelection({ activityId: activity.id, productId: selectedId, quantity: next });
@@ -399,7 +410,25 @@ export default function ActivityClient({
               >
                 <Minus size={13} />
               </button>
-              <span className="w-6 text-center font-bold">{quantity}</span>
+              <input
+                type="number"
+                min={1}
+                max={activity.maxQuantity}
+                value={quantity}
+                disabled={!canSelect}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  const next = Math.min(activity.maxQuantity, Math.max(1, Math.floor(value)));
+                  setQuantity(next);
+                  if (selectedId) {
+                    startTransition(async () => {
+                      await saveSelection({ activityId: activity.id, productId: selectedId, quantity: next });
+                    });
+                  }
+                }}
+                className="w-12 text-center font-bold text-xs py-1 rounded border border-card-border bg-background focus:border-primary outline-none disabled:opacity-50"
+              />
               <button
                 onClick={() => changeQuantity(1)}
                 disabled={!canSelect || quantity >= activity.maxQuantity}
@@ -414,10 +443,44 @@ export default function ActivityClient({
             <span className="text-muted-foreground">Total:</span>
             <span className="font-bold">{total}</span>
           </div>
-          <div className="flex items-center justify-between text-xs mb-3">
+          <div className="flex items-center justify-between text-xs mb-2">
             <span className="text-muted-foreground">Ticket:</span>
             <span className="font-bold text-primary flex items-center gap-1">
               <Ticket size={12} /> {total}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-muted-foreground">Use Balance:</span>
+            <input
+              type="number"
+              min={selected ? selected.ticketCost : 1}
+              max={user.balance}
+              value={customBalance}
+              disabled={!canSelect || !selected}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (Number.isNaN(value)) return;
+                if (!selected) return;
+                const max = Math.min(user.balance, activity.maxQuantity * selected.ticketCost);
+                const clamped = Math.min(max, Math.max(0, Math.floor(value)));
+                const cost = selected.ticketCost;
+                const nextTotal = Math.floor(clamped / cost) * cost;
+                const nextQty = Math.max(1, nextTotal / cost);
+                setCustomBalance(nextTotal);
+                setQuantity(nextQty);
+                if (selectedId) {
+                  startTransition(async () => {
+                    await saveSelection({ activityId: activity.id, productId: selectedId, quantity: nextQty });
+                  });
+                }
+              }}
+              className="w-16 text-right font-bold text-xs py-1 px-2 rounded border border-card-border bg-background focus:border-primary outline-none disabled:opacity-50"
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs mb-3">
+            <span className="text-muted-foreground">Wallet Balance:</span>
+            <span className="font-bold text-success flex items-center gap-1">
+              <Wallet size={12} /> ₹{user.balance}
             </span>
           </div>
           <button

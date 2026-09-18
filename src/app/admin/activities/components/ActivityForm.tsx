@@ -2,9 +2,9 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Pencil, Power } from "lucide-react";
+import { CalendarDays, Pencil, Power, CalendarPlus } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
-import { saveActivity } from "@/actions/activities-admin";
+import { saveActivity, extendActivity } from "@/actions/activities-admin";
 
 export type ActivityInput = {
   id: string | null;
@@ -236,6 +236,24 @@ export default function ActivityForm({ activity }: { activity?: ActivityInput })
     });
   }
 
+  function extend() {
+    if (!activity || !activity.id) return;
+    setError(null);
+    startTransition(async () => {
+      try {
+        const res = await extendActivity(activity.id!, 7);
+        if (res.success) {
+          toast("Activity extended by 7 days", "success");
+          router.refresh();
+        } else {
+          toast(res.error ?? "Unable to extend activity", "error");
+        }
+      } catch {
+        toast("Unable to extend activity. Please try again.", "error");
+      }
+    });
+  }
+
   function beginEdit() {
     setValues(initial);
     setError(null);
@@ -271,6 +289,13 @@ export default function ActivityForm({ activity }: { activity?: ActivityInput })
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50 transition-colors"
             >
               <Pencil size={13} /> Edit
+            </button>
+            <button
+              onClick={extend}
+              disabled={busy}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-warning/10 text-warning hover:bg-warning/20 disabled:opacity-50 transition-colors"
+            >
+              <CalendarPlus size={13} /> +7 days
             </button>
             <button
               onClick={toggleActive}

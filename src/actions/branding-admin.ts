@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { uploadToStorage } from "@/lib/storage";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
@@ -37,25 +38,22 @@ export async function uploadLogo(formData: FormData) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-
-    // Remove previous logo files
-    try {
-      const files = await fs.readdir(UPLOAD_DIR);
-      for (const f of files) {
-        if (f.startsWith("logo-") && f.endsWith(".png")) {
-          await fs.unlink(path.join(UPLOAD_DIR, f));
-        }
-      }
-    } catch {
-      // ignore
-    }
-
     const fileName = `logo-${Date.now()}.png`;
-    const filePath = path.join(UPLOAD_DIR, fileName);
-    await fs.writeFile(filePath, buffer);
+    const logoUrl = await uploadToStorage(buffer, "image/png", `uploads/${fileName}`);
 
-    const logoUrl = `/uploads/${fileName}`;
+    // Remove previous local logo files only when using local fallback
+    if (logoUrl.startsWith("/uploads/")) {
+      try {
+        const files = await fs.readdir(UPLOAD_DIR);
+        for (const f of files) {
+          if (f.startsWith("logo-") && f.endsWith(".png")) {
+            await fs.unlink(path.join(UPLOAD_DIR, f));
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
 
     await prisma.siteSetting.upsert({
       where: { key: "app_logo" },
@@ -86,16 +84,20 @@ export async function resetLogo() {
   const admin = await requireAdmin();
   try {
     await prisma.siteSetting.deleteMany({ where: { key: "app_logo" } });
-    try {
-      const files = await fs.readdir(UPLOAD_DIR);
-      for (const f of files) {
-        if (f.startsWith("logo-") && f.endsWith(".png")) {
-          await fs.unlink(path.join(UPLOAD_DIR, f));
+
+    if (!process.env.R2_ENDPOINT) {
+      try {
+        const files = await fs.readdir(UPLOAD_DIR);
+        for (const f of files) {
+          if (f.startsWith("logo-") && f.endsWith(".png")) {
+            await fs.unlink(path.join(UPLOAD_DIR, f));
+          }
         }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
     }
+
     await prisma.adminAction.create({
       data: {
         adminId: admin.id,

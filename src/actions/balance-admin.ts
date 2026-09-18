@@ -118,6 +118,51 @@ export async function deductBalance(userId: string, amount: number, reason?: str
   }
 }
 
+export async function addBalance(userId: string, amount: number, reason?: string) {
+  const admin = await requireAdmin();
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { success: false, error: "Amount must be greater than 0" };
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const wallet = await tx.wallet.upsert({
+        where: { userId },
+        update: { balance: { increment: amount } },
+        create: { userId, balance: amount, frozenBalance: 0 },
+      });
+
+      await tx.walletTransaction.create({
+        data: {
+          walletId: wallet.id,
+          type: "ADMIN_ADJUSTMENT",
+          amount,
+          direction: "CREDIT",
+          description: reason?.trim() ? `Admin add: ${reason.trim()}` : `Admin added ₹${amount}`,
+          balanceAfter: toNumber(wallet.balance),
+        },
+      });
+
+      await tx.adminAction.create({
+        data: {
+          adminId: admin.id,
+          action: "ADD_BALANCE",
+          entityType: "Wallet",
+          entityId: wallet.id,
+          details: { userId, amount, reason: reason ?? null },
+        },
+      });
+    });
+
+    revalidatePath("/admin/balances");
+    revalidatePath("/admin/users");
+    revalidatePath("/mine");
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to add balance" };
+  }
+}
+
 export async function unfreezeBalance(userId: string, amount: number) {
   const admin = await requireAdmin();
   if (!Number.isFinite(amount) || amount <= 0) {

@@ -144,9 +144,9 @@ export default function RegisterPage() {
               </div>
             </div>
             <Input
-              label="Referral Code"
+              label="Referral Code (optional)"
               name="referralCode"
-              placeholder="Enter referral code"
+              placeholder="Enter referral code (e.g. LOVEBIRDS)"
               value={form.referralCode}
               onChange={handleChange}
             />

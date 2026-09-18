@@ -202,7 +202,13 @@ export default function ProductRow({
             </div>
             {imageUrl && (
               <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 relative">
-                <Image src={imageUrl} alt="preview" fill className="object-cover" />
+                <Image
+                  src={imageUrl}
+                  alt="preview"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
           </label>

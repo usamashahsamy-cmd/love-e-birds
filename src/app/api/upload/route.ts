@@ -1,17 +1,9 @@
 import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
-import fs from "fs/promises";
-import path from "path";
+import { uploadToStorage } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-const EXT: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-};
 const MAX_SIZE = 5 * 1024 * 1024;
 
 export async function POST(request: Request) {
@@ -34,15 +26,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "File must be under 5MB" }, { status: 400 });
     }
 
-    const dir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(dir, { recursive: true });
-
-    const ext = EXT[file.type] ?? "jpg";
-    const name = `${randomUUID()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(path.join(dir, name), buffer);
+    const url = await uploadToStorage(buffer, file.type);
 
-    return NextResponse.json({ url: `/uploads/${name}` });
+    return NextResponse.json({ url });
   } catch {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }

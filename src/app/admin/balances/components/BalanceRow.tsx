@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "@/components/ui/Toast";
-import { freezeBalance, deductBalance, unfreezeBalance } from "@/actions/balance-admin";
+import { freezeBalance, deductBalance, unfreezeBalance, addBalance } from "@/actions/balance-admin";
 
 interface BalanceRowProps {
   user: {
@@ -22,7 +22,7 @@ export default function BalanceRow({ user }: BalanceRowProps) {
 
   const available = user.balance - user.frozenBalance;
 
-  function runAction(action: "freeze" | "deduct" | "unfreeze") {
+  function runAction(action: "freeze" | "deduct" | "unfreeze" | "add") {
     const value = Number(amount);
     if (!value || value <= 0) {
       toast("Enter a valid amount", "error");
@@ -33,10 +33,20 @@ export default function BalanceRow({ user }: BalanceRowProps) {
       let res;
       if (action === "freeze") res = await freezeBalance(user.id, value);
       else if (action === "deduct") res = await deductBalance(user.id, value, reason);
+      else if (action === "add") res = await addBalance(user.id, value, reason);
       else res = await unfreezeBalance(user.id, value);
 
       if (res.success) {
-        toast(action === "freeze" ? "Balance frozen" : action === "deduct" ? "Balance deducted" : "Balance unfrozen", "success");
+        toast(
+          action === "freeze"
+            ? "Balance frozen"
+            : action === "deduct"
+              ? "Balance deducted"
+              : action === "add"
+                ? "Balance added"
+                : "Balance unfrozen",
+          "success"
+        );
         setAmount("");
         setReason("");
       } else {
@@ -59,57 +69,53 @@ export default function BalanceRow({ user }: BalanceRowProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-card-border">
-        <div className="space-y-2">
-          <input
-            type="number"
-            min={1}
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
-            className="w-full px-3 py-2 text-xs rounded-lg border border-card-border bg-background focus:border-primary outline-none"
-          />
-          <button
-            onClick={() => runAction("freeze")}
-            disabled={pending}
-            className="w-full py-2 rounded-lg text-xs font-semibold bg-warning/10 text-warning hover:bg-warning/20 disabled:opacity-50"
-          >
-            Freeze
-          </button>
-        </div>
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Reason (optional)"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className="w-full px-3 py-2 text-xs rounded-lg border border-card-border bg-background focus:border-primary outline-none"
-          />
-          <button
-            onClick={() => runAction("deduct")}
-            disabled={pending}
-            className="w-full py-2 rounded-lg text-xs font-semibold bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50"
-          >
-            Deduct
-          </button>
-        </div>
-        <div className="space-y-2">
-          <input
-            type="number"
-            min={1}
-            placeholder="Unfreeze amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
-            className="w-full px-3 py-2 text-xs rounded-lg border border-card-border bg-background focus:border-primary outline-none"
-          />
-          <button
-            onClick={() => runAction("unfreeze")}
-            disabled={pending}
-            className="w-full py-2 rounded-lg text-xs font-semibold bg-success/10 text-success hover:bg-success/20 disabled:opacity-50"
-          >
-            Unfreeze
-          </button>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-card-border">
+        <input
+          type="number"
+          min={1}
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
+          className="w-full px-3 py-2 text-xs rounded-lg border border-card-border bg-background focus:border-primary outline-none"
+        />
+        <input
+          type="text"
+          placeholder="Reason (optional)"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          className="w-full px-3 py-2 text-xs rounded-lg border border-card-border bg-background focus:border-primary outline-none"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
+        <button
+          onClick={() => runAction("freeze")}
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-xs font-semibold bg-warning/10 text-warning hover:bg-warning/20 disabled:opacity-50"
+        >
+          Freeze
+        </button>
+        <button
+          onClick={() => runAction("deduct")}
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-xs font-semibold bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50"
+        >
+          Deduct
+        </button>
+        <button
+          onClick={() => runAction("unfreeze")}
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-xs font-semibold bg-success/10 text-success hover:bg-success/20 disabled:opacity-50"
+        >
+          Unfreeze
+        </button>
+        <button
+          onClick={() => runAction("add")}
+          disabled={pending}
+          className="w-full py-2 rounded-lg text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50"
+        >
+          Add Balance
+        </button>
       </div>
     </div>
   );

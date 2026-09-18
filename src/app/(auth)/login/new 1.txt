@@ -1,0 +1,13 @@
+DATABASE_URL="postgresql://loveebirds:loveebirds123@localhost:5432/love_e_birds?schema=public"
+
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="dev-secret-change-me-in-production-0123456789abcdef"
+
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+Cloudflare R2
+R2_ENDPOINT="https://def6f8cb435790009e17eb7ae1c36c40.r2.cloudflarestorage.com"
+R2_ACCESS_KEY_ID="0f001cb116a1f53bc37766c76de1a967"
+R2_SECRET_ACCESS_KEY="492081ad7e328fce4836fe132213816d54ef98ed36382b0c30d99886694c2d8b"
+R2_BUCKET_NAME="love-e-birds-media"
+R2_PUBLIC_URL="R2_PUBLIC_URL="https://pub-7b96fd14d0df43d8b854b5b74be82590.r2.dev"

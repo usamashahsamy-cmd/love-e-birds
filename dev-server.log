@@ -4,25 +4,9 @@
 
 ▲ Next.js 16.3.5 (Turbopack)
 - Local:         http://localhost:3000
-- Network:       http://10.26.18.26:3000
+- Network:       http://192.168.0.105:3000
 - Environments: .env
-✓ Ready in 1344ms
-✓ Running next.config.ts took 119ms
+✓ Ready in 9.5s
+✓ Running next.config.ts took 748ms
 
- GET /notifications 200 in 3.0s (next.js: 1003ms, proxy.ts: 417ms, application-code: 1609ms)
- GET /admin 200 in 3.2s (next.js: 756ms, proxy.ts: 405ms, application-code: 2.0s)
- GET /api/auth/session 200 in 2.1s (next.js: 1917ms, proxy.ts: 12ms, application-code: 124ms)
- GET /api/auth/session 200 in 89ms (next.js: 59ms, proxy.ts: 10ms, application-code: 20ms)
- GET /api/auth/session 200 in 59ms (next.js: 21ms, proxy.ts: 10ms, application-code: 28ms)
- GET /api/auth/session 200 in 63ms (next.js: 13ms, proxy.ts: 28ms, application-code: 22ms)
- GET /api/auth/session 200 in 84ms (next.js: 12ms, proxy.ts: 34ms, application-code: 37ms)
- GET /api/auth/csrf 200 in 65ms (next.js: 29ms, proxy.ts: 10ms, application-code: 27ms)
- POST /api/auth/callback/credentials 200 in 750ms (next.js: 14ms, proxy.ts: 11ms, application-code: 725ms)
- GET /admin 200 in 515ms (next.js: 14ms, proxy.ts: 9ms, application-code: 492ms)
- GET /admin/featured-users 200 in 345ms (next.js: 70ms, proxy.ts: 9ms, application-code: 265ms)
- GET /admin/branding 200 in 284ms (next.js: 67ms, proxy.ts: 8ms, application-code: 209ms)
- GET /home 200 in 651ms (next.js: 144ms, proxy.ts: 12ms, application-code: 495ms)
- GET /mine/verification 200 in 365ms (next.js: 82ms, proxy.ts: 7ms, application-code: 276ms)
- GET /api/auth/csrf 200 in 70ms (next.js: 41ms, proxy.ts: 8ms, application-code: 21ms)
- POST /api/auth/callback/credentials 200 in 991ms (next.js: 13ms, proxy.ts: 9ms, application-code: 969ms)
- GET /home 200 in 432ms (next.js: 11ms, proxy.ts: 6ms, application-code: 415ms)
+ POST /api/auth/register 400 in 5.8s (next.js: 5.4s, proxy.ts: 20ms, application-code: 368ms)

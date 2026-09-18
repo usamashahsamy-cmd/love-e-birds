@@ -34,6 +34,7 @@ export default async function AdminUserEditPage({ params }: { params: Promise<{ 
           creditScore: user.creditScore,
           bio: user.profile?.bio ?? "",
           location: user.profile?.location ?? "",
+          avatar: user.avatar,
           balance: user.wallet ? Number(user.wallet.balance.toString()) : 0,
           frozenBalance: user.wallet ? Number(user.wallet.frozenBalance.toString()) : 0,
         }}

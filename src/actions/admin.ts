@@ -339,8 +339,8 @@ export async function toggleAnnouncement(announcementId: string, isActive: boole
 
 export async function updateUserAvatar(userId: string, avatarUrl: string) {
   const admin = await requireAdmin();
-  if (!avatarUrl.trim() || !avatarUrl.startsWith("http")) {
-    return { success: false, error: "Valid image URL is required" };
+  if (!avatarUrl.trim()) {
+    return { success: false, error: "Image URL is required" };
   }
   try {
     await prisma.$transaction(async (tx) => {
@@ -350,7 +350,7 @@ export async function updateUserAvatar(userId: string, avatarUrl: string) {
       });
     });
     revalidatePath("/admin/users");
-    revalidatePath(`/profile/${userId}`);
+    revalidatePath(`/admin/users/${userId}`);
     return { success: true };
   } catch {
     return { success: false, error: "Failed to update avatar" };
