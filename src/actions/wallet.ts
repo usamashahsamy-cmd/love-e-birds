@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rechargeSchema, withdrawSchema, paymentMethodSchema } from "@/lib/validations";
+import { rechargeSchema, withdrawSchema, addPaymentMethodSchema } from "@/lib/validations";
 import { encryptDetails, maskDetails } from "@/lib/encryption";
 import { revalidatePath } from "next/cache";
 
@@ -138,12 +138,15 @@ export async function withdrawWallet(input: { amount: number; paymentMethodId: s
 }
 
 export async function addPaymentMethod(input: {
-  type: "UPI" | "BANK_CARD" | "BANK_ACCOUNT" | "WALLET";
-  label: string;
-  details: string;
+  type: "UPI" | "BANK_ACCOUNT";
+  upiId?: string;
+  bankName?: string;
+  accountHolder?: string;
+  accountNumber?: string;
+  ifscCode?: string;
 }) {
   const userId = await requireUser();
-  const parsed = paymentMethodSchema.safeParse(input);
+  const parsed = addPaymentMethodSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
@@ -151,13 +154,39 @@ export async function addPaymentMethod(input: {
   const existing = await prisma.paymentMethod.count({ where: { userId } });
   const isDefault = existing === 0;
 
+  const { type } = parsed.data;
+
+  let label: string;
+  let details: string;
+  let maskedDetails: string;
+  let bankName: string | null = null;
+  let accountHolder: string | null = null;
+  let ifscCode: string | null = null;
+
+  if (parsed.data.type === "UPI") {
+    details = parsed.data.upiId;
+    label = parsed.data.upiId;
+    maskedDetails = maskDetails("UPI", parsed.data.upiId);
+  } else {
+    details = parsed.data.accountNumber;
+    bankName = parsed.data.bankName;
+    accountHolder = parsed.data.accountHolder;
+    ifscCode = parsed.data.ifscCode;
+    const last4 = parsed.data.accountNumber.replace(/\s+/g, "").slice(-4);
+    label = `${parsed.data.bankName} (••••${last4})`;
+    maskedDetails = `${parsed.data.bankName} · A/c ••••${last4} · IFSC ${parsed.data.ifscCode}`;
+  }
+
   await prisma.paymentMethod.create({
     data: {
       userId,
-      type: parsed.data.type,
-      label: parsed.data.label,
-      detailsEncrypted: encryptDetails(parsed.data.details),
-      maskedDetails: maskDetails(parsed.data.type, parsed.data.details),
+      type,
+      label,
+      detailsEncrypted: encryptDetails(details),
+      maskedDetails,
+      bankName,
+      accountHolder,
+      ifscCode,
       isDefault,
     },
   });

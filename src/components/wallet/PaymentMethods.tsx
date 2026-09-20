@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Star, CreditCard, Landmark, Wallet, Smartphone } from "lucide-react";
+import { Plus, Trash2, Star, Landmark, Smartphone, Save } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
 import Modal from "@/components/ui/Modal";
 import { addPaymentMethod, deletePaymentMethod, setDefaultPaymentMethod } from "@/actions/wallet";
@@ -15,47 +15,89 @@ interface MethodItem {
   isDefault: boolean;
 }
 
-const TYPE_META: Record<string, { icon: React.ComponentType<{ size?: number | string; className?: string }>; placeholder: string }> = {
-  UPI: { icon: Smartphone, placeholder: "e.g. name@upi" },
-  BANK_CARD: { icon: CreditCard, placeholder: "e.g. 4111 1111 1111 1234" },
-  BANK_ACCOUNT: { icon: Landmark, placeholder: "e.g. 12345678901" },
-  WALLET: { icon: Wallet, placeholder: "e.g. Paytm Number" },
+const TYPE_OPTIONS = [
+  { value: "BANK_ACCOUNT" as const, icon: Landmark, label: "Bank Account" },
+  { value: "UPI" as const, icon: Smartphone, label: "UPI" },
+];
+
+const TYPE_ICON: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
+  UPI: Smartphone,
+  BANK_ACCOUNT: Landmark,
 };
+
+const IFSC_REGEX = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
 export default function PaymentMethods({ methods }: { methods: MethodItem[] }) {
   const router = useRouter();
   const [addOpen, setAddOpen] = useState(false);
-  const [type, setType] = useState<"UPI" | "BANK_CARD" | "BANK_ACCOUNT" | "WALLET">("UPI");
-  const [label, setLabel] = useState("");
-  const [details, setDetails] = useState("");
+  const [type, setType] = useState<"UPI" | "BANK_ACCOUNT">("UPI");
+  const [upiId, setUpiId] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [accountHolder, setAccountHolder] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
   const [pending, startTransition] = useTransition();
 
   function reset() {
-    setLabel("");
-    setDetails("");
     setType("UPI");
+    setUpiId("");
+    setBankName("");
+    setAccountHolder("");
+    setAccountNumber("");
+    setIfscCode("");
   }
 
   function handleAdd() {
-    if (!label.trim()) {
-      toast("Enter a label", "error");
-      return;
-    }
-    if (details.trim().length < 5) {
-      toast("Enter valid payment details", "error");
-      return;
-    }
-    startTransition(async () => {
-      const res = await addPaymentMethod({ type, label: label.trim(), details: details.trim() });
-      if (res.success) {
-        toast("Payment method added", "success");
-        reset();
-        setAddOpen(false);
-        router.refresh();
-      } else {
-        toast(res.error ?? "Failed to add", "error");
+    if (type === "UPI") {
+      if (!upiId.trim()) {
+        toast("Enter your UPI ID", "error");
+        return;
       }
+      startTransition(async () => {
+        const res = await addPaymentMethod({ type: "UPI", upiId: upiId.trim() });
+        finishAdd(res.success, res.error);
+      });
+      return;
+    }
+
+    if (!bankName.trim()) {
+      toast("Enter bank name", "error");
+      return;
+    }
+    if (!accountHolder.trim()) {
+      toast("Enter account holder name", "error");
+      return;
+    }
+    if (!/^[0-9]{9,20}$/.test(accountNumber.trim())) {
+      toast("Enter a valid account number (9-20 digits)", "error");
+      return;
+    }
+    if (!IFSC_REGEX.test(ifscCode.trim().toUpperCase())) {
+      toast("Enter a valid IFSC code e.g. HDFC0000123", "error");
+      return;
+    }
+
+    startTransition(async () => {
+      const res = await addPaymentMethod({
+        type: "BANK_ACCOUNT",
+        bankName: bankName.trim(),
+        accountHolder: accountHolder.trim(),
+        accountNumber: accountNumber.trim(),
+        ifscCode: ifscCode.trim().toUpperCase(),
+      });
+      finishAdd(res.success, res.error);
     });
+  }
+
+  function finishAdd(success: boolean, error?: string) {
+    if (success) {
+      toast("Payment method added", "success");
+      reset();
+      setAddOpen(false);
+      router.refresh();
+    } else {
+      toast(error ?? "Failed to add", "error");
+    }
   }
 
   function handleDelete(id: string, methodLabel: string) {
@@ -91,8 +133,7 @@ export default function PaymentMethods({ methods }: { methods: MethodItem[] }) {
 
       <div className="space-y-3">
         {methods.map((m) => {
-          const meta = TYPE_META[m.type] ?? TYPE_META.UPI;
-          const Icon = meta.icon;
+          const Icon = TYPE_ICON[m.type] ?? TYPE_ICON.UPI;
           return (
             <div
               key={m.id}
@@ -110,7 +151,7 @@ export default function PaymentMethods({ methods }: { methods: MethodItem[] }) {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{m.maskedDetails}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">{m.maskedDetails}</p>
               </div>
               <div className="flex items-center gap-1.5">
                 {!m.isDefault && (
@@ -145,48 +186,92 @@ export default function PaymentMethods({ methods }: { methods: MethodItem[] }) {
       )}
 
       <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add Payment Method">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Type</label>
+            <label className="text-xs text-muted-foreground mb-1.5 block">Type</label>
             <div className="grid grid-cols-2 gap-2">
-              {(Object.keys(TYPE_META) as (keyof typeof TYPE_META)[]).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setType(t as typeof type)}
-                  className={`px-3 py-2 rounded-lg border text-xs font-medium transition-all ${
-                    type === t ? "border-primary bg-primary/5 text-primary" : "border-card-border"
-                  }`}
-                >
-                  {t === "BANK_CARD" ? "Bank Card" : t === "BANK_ACCOUNT" ? "Bank Account" : t}
-                </button>
-              ))}
+              {TYPE_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setType(opt.value)}
+                    className={`px-3 py-2.5 rounded-xl border text-sm font-medium transition-all inline-flex items-center justify-center gap-1.5 ${
+                      type === opt.value
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-card-border text-muted-foreground"
+                    }`}
+                  >
+                    <Icon size={16} />
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Label</label>
-            <input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. My UPI / Salary Account"
-              className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
-            />
+
+          {type === "BANK_ACCOUNT" ? (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Bank Name</label>
+                <input
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  placeholder="e.g. HDFC Bank"
+                  className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Account Holder</label>
+                <input
+                  value={accountHolder}
+                  onChange={(e) => setAccountHolder(e.target.value)}
+                  placeholder="Name on bank account"
+                  className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Account Number</label>
+                <input
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value.replace(/[^\d]/g, ""))}
+                  inputMode="numeric"
+                  placeholder="9-20 digits"
+                  className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">IFSC Code</label>
+                <input
+                  value={ifscCode}
+                  onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. HDFC0000123"
+                  maxLength={11}
+                  className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card uppercase focus:border-primary outline-none"
+                />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">UPI ID</label>
+              <input
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                placeholder="e.g. yourname@okhdfc"
+                className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
+              />
+            </div>
+          )}
+
+          <div className="sticky bottom-0 -mx-4 -mb-4 px-4 pt-3 pb-4 bg-card rounded-b-2xl">
+            <button
+              onClick={handleAdd}
+              disabled={pending}
+              className="w-full py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60 inline-flex items-center justify-center gap-1.5"
+            >
+              <Save size={16} /> {pending ? "Saving..." : "Save"}
+            </button>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Details</label>
-            <input
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder={TYPE_META[type].placeholder}
-              className="w-full px-3 py-2 rounded-lg border border-card-border text-sm bg-card focus:border-primary outline-none"
-            />
-          </div>
-          <button
-            onClick={handleAdd}
-            disabled={pending}
-            className="w-full py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-colors disabled:opacity-60"
-          >
-            Save
-          </button>
         </div>
       </Modal>
     </div>

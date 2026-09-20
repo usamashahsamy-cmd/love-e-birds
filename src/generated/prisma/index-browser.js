@@ -354,6 +354,9 @@ exports.Prisma.PaymentMethodScalarFieldEnum = {
   label: 'label',
   detailsEncrypted: 'detailsEncrypted',
   maskedDetails: 'maskedDetails',
+  bankName: 'bankName',
+  accountHolder: 'accountHolder',
+  ifscCode: 'ifscCode',
   isDefault: 'isDefault',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

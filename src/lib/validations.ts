@@ -63,11 +63,31 @@ export const reportSchema = z.object({
   reason: z.string().min(10, "Please provide more details"),
 });
 
-export const paymentMethodSchema = z.object({
-  type: z.enum(["UPI", "BANK_CARD", "BANK_ACCOUNT", "WALLET"]),
-  label: z.string().min(1, "Label is required"),
-  details: z.string().min(5, "Payment details are required"),
+export const upiPaymentSchema = z.object({
+  type: z.literal("UPI"),
+  upiId: z
+    .string()
+    .min(3, "Enter a valid UPI ID")
+    .max(100)
+    .regex(/^[^\s@]+@[^\s@]+$/, "Enter a valid UPI ID e.g. name@upi"),
 });
+
+export const bankAccountPaymentSchema = z.object({
+  type: z.literal("BANK_ACCOUNT"),
+  bankName: z.string().min(2, "Bank name is required").max(100),
+  accountHolder: z.string().min(2, "Account holder name is required").max(100),
+  accountNumber: z
+    .string()
+    .min(9, "Account number must be at least 9 digits")
+    .max(20, "Account number is too long")
+    .regex(/^[0-9]+$/, "Account number must only contain digits"),
+  ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Enter a valid IFSC code e.g. HDFC0000123"),
+});
+
+export const addPaymentMethodSchema = z.discriminatedUnion("type", [
+  upiPaymentSchema,
+  bankAccountPaymentSchema,
+]);
 
 export const verificationSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters").max(100),
@@ -94,6 +114,6 @@ export type RechargeInput = z.infer<typeof rechargeSchema>;
 export type WithdrawInput = z.infer<typeof withdrawSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type ReportInput = z.infer<typeof reportSchema>;
-export type PaymentMethodInput = z.infer<typeof paymentMethodSchema>;
+export type PaymentMethodInput = z.infer<typeof addPaymentMethodSchema>;
 export type VerificationInput = z.infer<typeof verificationSchema>;
 export type BannerInput = z.infer<typeof bannerSchema>;

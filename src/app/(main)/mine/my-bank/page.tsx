@@ -23,7 +23,7 @@ export default async function MyBankPage() {
         <Landmark size={20} className="text-primary" /> My Bank
       </h1>
       <p className="text-xs text-muted-foreground mb-4">
-        Save UPI, cards or bank accounts to withdraw your earnings. Details are stored securely.
+        Save your bank account or UPI details to receive withdrawals. Details are stored securely and only bank name, IFSC and masked account digits are shown to you.
       </p>
       <PaymentMethods methods={methods} />
     </div>

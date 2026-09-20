@@ -32,9 +32,9 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-auto shadow-xl animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 duration-200">
+      <div className="relative bg-card rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-auto shadow-xl animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 duration-200 pb-[env(safe-area-inset-bottom)]">
         {title && (
           <div className="flex items-center justify-between px-4 py-3 border-b border-card-border">
             <h3 className="font-semibold text-foreground">{title}</h3>

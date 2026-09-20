@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import DashboardMenuItem from "@/components/ui/DashboardMenuItem";
 import GradientButton from "@/components/ui/GradientButton";
-import { signOut } from "next-auth/react";
+import { handleLogout } from "@/lib/logout";
 
 const menuItems = [
   { id: "essential-information", label: "Essential Information", href: "/mine/essential-information", icon: UserCircle },
@@ -43,7 +43,7 @@ export default function DashboardMenuItems() {
 
       <div className="mt-5">
         <GradientButton
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => handleLogout()}
           className="bg-none from-grape to-berry bg-gradient-to-r"
         >
           <span className="flex items-center justify-center gap-2">

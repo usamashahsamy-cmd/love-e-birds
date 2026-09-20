@@ -30185,6 +30185,9 @@ export namespace Prisma {
     label: string | null
     detailsEncrypted: string | null
     maskedDetails: string | null
+    bankName: string | null
+    accountHolder: string | null
+    ifscCode: string | null
     isDefault: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -30197,6 +30200,9 @@ export namespace Prisma {
     label: string | null
     detailsEncrypted: string | null
     maskedDetails: string | null
+    bankName: string | null
+    accountHolder: string | null
+    ifscCode: string | null
     isDefault: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -30209,6 +30215,9 @@ export namespace Prisma {
     label: number
     detailsEncrypted: number
     maskedDetails: number
+    bankName: number
+    accountHolder: number
+    ifscCode: number
     isDefault: number
     createdAt: number
     updatedAt: number
@@ -30223,6 +30232,9 @@ export namespace Prisma {
     label?: true
     detailsEncrypted?: true
     maskedDetails?: true
+    bankName?: true
+    accountHolder?: true
+    ifscCode?: true
     isDefault?: true
     createdAt?: true
     updatedAt?: true
@@ -30235,6 +30247,9 @@ export namespace Prisma {
     label?: true
     detailsEncrypted?: true
     maskedDetails?: true
+    bankName?: true
+    accountHolder?: true
+    ifscCode?: true
     isDefault?: true
     createdAt?: true
     updatedAt?: true
@@ -30247,6 +30262,9 @@ export namespace Prisma {
     label?: true
     detailsEncrypted?: true
     maskedDetails?: true
+    bankName?: true
+    accountHolder?: true
+    ifscCode?: true
     isDefault?: true
     createdAt?: true
     updatedAt?: true
@@ -30332,6 +30350,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName: string | null
+    accountHolder: string | null
+    ifscCode: string | null
     isDefault: boolean
     createdAt: Date
     updatedAt: Date
@@ -30361,6 +30382,9 @@ export namespace Prisma {
     label?: boolean
     detailsEncrypted?: boolean
     maskedDetails?: boolean
+    bankName?: boolean
+    accountHolder?: boolean
+    ifscCode?: boolean
     isDefault?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -30376,6 +30400,9 @@ export namespace Prisma {
     label?: boolean
     detailsEncrypted?: boolean
     maskedDetails?: boolean
+    bankName?: boolean
+    accountHolder?: boolean
+    ifscCode?: boolean
     isDefault?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -30389,6 +30416,9 @@ export namespace Prisma {
     label?: boolean
     detailsEncrypted?: boolean
     maskedDetails?: boolean
+    bankName?: boolean
+    accountHolder?: boolean
+    ifscCode?: boolean
     isDefault?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -30402,12 +30432,15 @@ export namespace Prisma {
     label?: boolean
     detailsEncrypted?: boolean
     maskedDetails?: boolean
+    bankName?: boolean
+    accountHolder?: boolean
+    ifscCode?: boolean
     isDefault?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PaymentMethodOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "label" | "detailsEncrypted" | "maskedDetails" | "isDefault" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentMethod"]>
+  export type PaymentMethodOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "label" | "detailsEncrypted" | "maskedDetails" | "bankName" | "accountHolder" | "ifscCode" | "isDefault" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentMethod"]>
   export type PaymentMethodInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     withdrawals?: boolean | PaymentMethod$withdrawalsArgs<ExtArgs>
@@ -30433,6 +30466,9 @@ export namespace Prisma {
       label: string
       detailsEncrypted: string
       maskedDetails: string
+      bankName: string | null
+      accountHolder: string | null
+      ifscCode: string | null
       isDefault: boolean
       createdAt: Date
       updatedAt: Date
@@ -30867,6 +30903,9 @@ export namespace Prisma {
     readonly label: FieldRef<"PaymentMethod", 'String'>
     readonly detailsEncrypted: FieldRef<"PaymentMethod", 'String'>
     readonly maskedDetails: FieldRef<"PaymentMethod", 'String'>
+    readonly bankName: FieldRef<"PaymentMethod", 'String'>
+    readonly accountHolder: FieldRef<"PaymentMethod", 'String'>
+    readonly ifscCode: FieldRef<"PaymentMethod", 'String'>
     readonly isDefault: FieldRef<"PaymentMethod", 'Boolean'>
     readonly createdAt: FieldRef<"PaymentMethod", 'DateTime'>
     readonly updatedAt: FieldRef<"PaymentMethod", 'DateTime'>
@@ -53011,6 +53050,9 @@ export namespace Prisma {
     label: 'label',
     detailsEncrypted: 'detailsEncrypted',
     maskedDetails: 'maskedDetails',
+    bankName: 'bankName',
+    accountHolder: 'accountHolder',
+    ifscCode: 'ifscCode',
     isDefault: 'isDefault',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -55267,6 +55309,9 @@ export namespace Prisma {
     label?: StringFilter<"PaymentMethod"> | string
     detailsEncrypted?: StringFilter<"PaymentMethod"> | string
     maskedDetails?: StringFilter<"PaymentMethod"> | string
+    bankName?: StringNullableFilter<"PaymentMethod"> | string | null
+    accountHolder?: StringNullableFilter<"PaymentMethod"> | string | null
+    ifscCode?: StringNullableFilter<"PaymentMethod"> | string | null
     isDefault?: BoolFilter<"PaymentMethod"> | boolean
     createdAt?: DateTimeFilter<"PaymentMethod"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentMethod"> | Date | string
@@ -55281,6 +55326,9 @@ export namespace Prisma {
     label?: SortOrder
     detailsEncrypted?: SortOrder
     maskedDetails?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountHolder?: SortOrderInput | SortOrder
+    ifscCode?: SortOrderInput | SortOrder
     isDefault?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -55298,6 +55346,9 @@ export namespace Prisma {
     label?: StringFilter<"PaymentMethod"> | string
     detailsEncrypted?: StringFilter<"PaymentMethod"> | string
     maskedDetails?: StringFilter<"PaymentMethod"> | string
+    bankName?: StringNullableFilter<"PaymentMethod"> | string | null
+    accountHolder?: StringNullableFilter<"PaymentMethod"> | string | null
+    ifscCode?: StringNullableFilter<"PaymentMethod"> | string | null
     isDefault?: BoolFilter<"PaymentMethod"> | boolean
     createdAt?: DateTimeFilter<"PaymentMethod"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentMethod"> | Date | string
@@ -55312,6 +55363,9 @@ export namespace Prisma {
     label?: SortOrder
     detailsEncrypted?: SortOrder
     maskedDetails?: SortOrder
+    bankName?: SortOrderInput | SortOrder
+    accountHolder?: SortOrderInput | SortOrder
+    ifscCode?: SortOrderInput | SortOrder
     isDefault?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -55330,6 +55384,9 @@ export namespace Prisma {
     label?: StringWithAggregatesFilter<"PaymentMethod"> | string
     detailsEncrypted?: StringWithAggregatesFilter<"PaymentMethod"> | string
     maskedDetails?: StringWithAggregatesFilter<"PaymentMethod"> | string
+    bankName?: StringNullableWithAggregatesFilter<"PaymentMethod"> | string | null
+    accountHolder?: StringNullableWithAggregatesFilter<"PaymentMethod"> | string | null
+    ifscCode?: StringNullableWithAggregatesFilter<"PaymentMethod"> | string | null
     isDefault?: BoolWithAggregatesFilter<"PaymentMethod"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"PaymentMethod"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PaymentMethod"> | Date | string
@@ -58396,6 +58453,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -58410,6 +58470,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -58422,6 +58485,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58436,6 +58502,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58449,6 +58518,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -58460,6 +58532,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58472,6 +58547,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -61419,6 +61497,9 @@ export namespace Prisma {
     label?: SortOrder
     detailsEncrypted?: SortOrder
     maskedDetails?: SortOrder
+    bankName?: SortOrder
+    accountHolder?: SortOrder
+    ifscCode?: SortOrder
     isDefault?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -61431,6 +61512,9 @@ export namespace Prisma {
     label?: SortOrder
     detailsEncrypted?: SortOrder
     maskedDetails?: SortOrder
+    bankName?: SortOrder
+    accountHolder?: SortOrder
+    ifscCode?: SortOrder
     isDefault?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -61443,6 +61527,9 @@ export namespace Prisma {
     label?: SortOrder
     detailsEncrypted?: SortOrder
     maskedDetails?: SortOrder
+    bankName?: SortOrder
+    accountHolder?: SortOrder
+    ifscCode?: SortOrder
     isDefault?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66529,6 +66616,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66541,6 +66631,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67536,6 +67629,9 @@ export namespace Prisma {
     label?: StringFilter<"PaymentMethod"> | string
     detailsEncrypted?: StringFilter<"PaymentMethod"> | string
     maskedDetails?: StringFilter<"PaymentMethod"> | string
+    bankName?: StringNullableFilter<"PaymentMethod"> | string | null
+    accountHolder?: StringNullableFilter<"PaymentMethod"> | string | null
+    ifscCode?: StringNullableFilter<"PaymentMethod"> | string | null
     isDefault?: BoolFilter<"PaymentMethod"> | boolean
     createdAt?: DateTimeFilter<"PaymentMethod"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentMethod"> | Date | string
@@ -73305,6 +73401,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73318,6 +73417,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73462,6 +73564,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73475,6 +73580,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78427,6 +78535,9 @@ export namespace Prisma {
     label: string
     detailsEncrypted: string
     maskedDetails: string
+    bankName?: string | null
+    accountHolder?: string | null
+    ifscCode?: string | null
     isDefault?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78976,6 +79087,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78988,6 +79102,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79000,6 +79117,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     detailsEncrypted?: StringFieldUpdateOperationsInput | string
     maskedDetails?: StringFieldUpdateOperationsInput | string
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountHolder?: NullableStringFieldUpdateOperationsInput | string | null
+    ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     isDefault?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

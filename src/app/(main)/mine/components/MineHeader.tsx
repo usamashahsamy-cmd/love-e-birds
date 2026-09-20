@@ -1,8 +1,8 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { Star, LogOut } from "lucide-react";
 import Image from "next/image";
+import { handleLogout } from "@/lib/logout";
 
 interface MineHeaderProps {
   username: string;
@@ -31,7 +31,7 @@ export default function MineHeader({
       <div className="absolute bottom-0 left-10 w-24 h-24 bg-white/10 rounded-full translate-y-1/2" />
 
       <div className="flex items-center justify-between relative z-10">
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+        <button onClick={() => handleLogout()} className="p-2 hover:bg-white/10 rounded-full transition-colors">
           <LogOut size={20} />
         </button>
         <h2 className="font-semibold text-sm">{username}</h2>

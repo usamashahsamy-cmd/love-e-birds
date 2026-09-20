@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -23,6 +22,7 @@ import {
   ImageIcon,
 } from "lucide-react";
 import SiteLogo from "@/components/ui/SiteLogo";
+import { handleLogout } from "@/lib/logout";
 
 type NavItem = { href: string; label: string };
 type NavGroup = {
@@ -40,6 +40,7 @@ const navGroups: NavGroup[] = [
       { href: "/admin/balances", label: "Balances" },
       { href: "/admin/recharges", label: "Recharges" },
       { href: "/admin/withdrawals", label: "Withdrawals" },
+      { href: "/admin/banks", label: "Bank" },
     ],
   },
   { label: "Users", icon: Users, items: [{ href: "/admin/users", label: "Users" }] },
@@ -215,7 +216,7 @@ export function AdminShell({
               View app
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => handleLogout()}
               className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
             >
               <LogOut size={14} /> Logout
