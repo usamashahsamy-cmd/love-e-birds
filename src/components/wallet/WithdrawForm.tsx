@@ -31,8 +31,8 @@ export default function WithdrawForm({
   const maxPct = withdrawable > 0 ? Math.min(100, Math.round((value / withdrawable) * 100)) : 0;
 
   function handleWithdraw() {
-    if (!value || value < 100) {
-      toast("Minimum withdrawal is ₹100", "error");
+    if (!value || value <= 0) {
+      toast("Enter a valid amount", "error");
       return;
     }
     if (!methodId) {
@@ -77,8 +77,8 @@ export default function WithdrawForm({
         <div className="relative">
           <input
             type="number"
-            inputMode="numeric"
-            min={100}
+            inputMode="decimal"
+            min={1}
             max={withdrawable}
             placeholder={`Max ₹${withdrawable.toLocaleString("en-IN")}`}
             value={amount}
@@ -97,7 +97,7 @@ export default function WithdrawForm({
             />
           </div>
           <div className="flex justify-between mt-1 text-[10px] text-muted-foreground">
-            <span>Min ₹100</span>
+            <span>No minimum</span>
             <span>Withdrawable ₹{withdrawable.toLocaleString("en-IN")}</span>
           </div>
         </div>

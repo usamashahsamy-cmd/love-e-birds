@@ -41,7 +41,7 @@ export const rechargeSchema = z.object({
 });
 
 export const withdrawSchema = z.object({
-  amount: z.number().min(100, "Minimum withdrawal is ₹100"),
+  amount: z.number().positive("Amount must be greater than 0"),
   paymentMethodId: z.string().min(1, "Select a payment method"),
 });
 

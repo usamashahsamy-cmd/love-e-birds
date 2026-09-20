@@ -235,7 +235,13 @@ export function AdminShell({
           >
             <Menu size={20} />
           </button>
-          <h1 className="text-sm font-semibold text-muted-foreground lg:hidden">Admin</h1>
+          <div className="flex items-center gap-2 min-w-0">
+            <SiteLogo url={logoUrl} size={26} className="rounded-lg" />
+            <span className="font-bold text-sm gradient-primary-text truncate">Love e Birds</span>
+          </div>
+          <span className="ml-auto text-[11px] font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+            Admin Panel
+          </span>
         </header>
         <main className="max-w-5xl mx-auto px-4 lg:px-6 py-6">{children}</main>
       </div>

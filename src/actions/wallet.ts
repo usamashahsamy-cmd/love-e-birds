@@ -90,7 +90,6 @@ export async function withdrawWallet(input: { amount: number; paymentMethodId: s
       const updated = await tx.wallet.update({
         where: { id: wallet!.id },
         data: {
-          balance: { decrement: parsed.data.amount },
           frozenBalance: { increment: parsed.data.amount },
         },
       });

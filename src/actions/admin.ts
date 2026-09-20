@@ -144,7 +144,6 @@ export async function processWithdrawal(
           where: { id: wallet.id },
           data: {
             frozenBalance: { decrement: withdrawal.amount },
-            balance: { increment: withdrawal.amount },
           },
         });
         await tx.walletTransaction.create({
@@ -153,7 +152,7 @@ export async function processWithdrawal(
             type: "REFUND",
             amount: withdrawal.amount,
             direction: "CREDIT",
-            description: "Withdrawal rejected — amount refunded",
+            description: "Withdrawal rejected — amount released back",
             balanceAfter: toNumber(updated.balance),
           },
         });
@@ -166,7 +165,7 @@ export async function processWithdrawal(
             userId: withdrawal.userId,
             type: "WALLET",
             title: "Withdrawal rejected",
-            content: `₹${toNumber(withdrawal.amount)} was returned to your balance. ${
+            content: `₹${toNumber(withdrawal.amount)} has been released back to your available balance. ${
               input.note ?? ""
             }`,
             link: "/mine/withdraw-details",
@@ -175,7 +174,10 @@ export async function processWithdrawal(
       } else if (input.action === "APPROVED") {
         await tx.wallet.update({
           where: { userId: withdrawal.userId },
-          data: { frozenBalance: { decrement: withdrawal.amount } },
+          data: {
+            balance: { decrement: withdrawal.amount },
+            frozenBalance: { decrement: withdrawal.amount },
+          },
         });
         await tx.withdrawal.update({
           where: { id: withdrawalId },

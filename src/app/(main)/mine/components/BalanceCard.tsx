@@ -22,8 +22,15 @@ function formatINR(value: unknown): string {
   return formatted;
 }
 
+function toNumber(value: unknown): number {
+  const num = typeof value === "object" && value !== null && "toString" in value
+    ? Number(value.toString())
+    : Number(value);
+  return isNaN(num) ? 0 : num;
+}
+
 export default function BalanceCard({ wallet }: BalanceCardProps) {
-  const available = formatINR(wallet?.balance);
+  const available = formatINR(Math.max(0, toNumber(wallet?.balance) - toNumber(wallet?.frozenBalance)));
   const frozen = formatINR(wallet?.frozenBalance);
 
   return (
