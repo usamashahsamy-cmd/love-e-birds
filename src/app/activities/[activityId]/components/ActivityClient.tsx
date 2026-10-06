@@ -334,7 +334,7 @@ export default function ActivityClient({
       </div>
 
       <main className="px-4 pt-4">
-        {participated && (
+        {false && (
           <div className="mb-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl px-3 py-2.5 font-medium">
             You have already participated in this activity. See your{" "}
             <Link href="/activities/history" className="underline font-semibold">history</Link>.
@@ -595,7 +595,7 @@ export default function ActivityClient({
           <p>2. Each product costs tickets; total = ticket cost × quantity.</p>
           <p>3. Confirm participation to deduct tickets from your wallet.</p>
           <p>4. Maximum quantity per activity: {activity.maxQuantity}.</p>
-          <p>5. One participation per activity per user.</p>
+          <p>5. Participation is allowed multiple times while the activity is active.</p>
           <p>6. When the timer reaches zero, participation closes.</p>
           <p>7. Tickets are non-refundable once confirmed.</p>
         </div>

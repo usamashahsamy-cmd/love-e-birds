@@ -744,7 +744,6 @@ model ActivityParticipation {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([activityId, userId])
   @@index([userId, createdAt])
   @@index([activityId, status])
 }

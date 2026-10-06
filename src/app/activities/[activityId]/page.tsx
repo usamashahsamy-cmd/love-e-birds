@@ -32,8 +32,8 @@ export default async function ActivityPage({
     prisma.productSelection.findUnique({
       where: { userId_activityId: { userId: session.user.id, activityId: activity.id } },
     }),
-    prisma.activityParticipation.findUnique({
-      where: { activityId_userId: { activityId: activity.id, userId: session.user.id } },
+    prisma.activityParticipation.findFirst({
+      where: { activityId: activity.id, userId: session.user.id },
     }),
   ]);
 
@@ -50,7 +50,7 @@ export default async function ActivityPage({
     isFeatured: l.isFeatured,
   }));
 
-  const alreadyParticipated = !!participation && participation.status !== "CANCELLED";
+  const alreadyParticipated = false; // Multiple participations allowed
 
   return (
     <ActivityClient

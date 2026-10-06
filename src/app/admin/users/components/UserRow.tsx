@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShieldBan, ShieldCheck, BadgeCheck, UserX, UploadCloud, Loader2, Pencil } from "lucide-react";
+import { ShieldBan, ShieldCheck, BadgeCheck, UserX, UploadCloud, Loader2, Pencil, Key } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
-import { setUserStatus, setUserCreditScore, updateUserAvatar } from "@/actions/admin";
+import { setUserStatus, setUserCreditScore, updateUserAvatar, resetUserPassword } from "@/actions/admin";
 
 const STATUS_STYLE: Record<string, string> = {
   ACTIVE: "bg-success/10 text-success",
@@ -98,6 +98,25 @@ export default function UserRow({
     });
   }
 
+  function resetPassword() {
+    if (isSelf) return;
+    const newPass = prompt(`Enter new password for ${user.displayName} (min 6 chars):`);
+    if (!newPass) return;
+    if (newPass.length < 6) {
+      toast("Password must be at least 6 characters", "error");
+      return;
+    }
+    startTransition(async () => {
+      const res = await resetUserPassword(user.id, newPass);
+      if (res.success) {
+        toast("Password reset successfully", "success");
+        router.refresh();
+      } else {
+        toast(res.error ?? "Failed to reset password", "error");
+      }
+    });
+  }
+
   return (
     <div className="bg-card border border-card-border rounded-2xl p-4">
       <div className="flex items-center gap-3">
@@ -175,6 +194,13 @@ export default function UserRow({
           >
             <Pencil size={13} /> Edit
           </Link>
+          <button
+            onClick={resetPassword}
+            disabled={pending || isSelf}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+          >
+            <Key size={13} /> Reset Password
+          </button>
           <div className="flex items-center gap-1.5 ml-auto">
             <span className="text-[11px] text-muted-foreground">Score:</span>
             <input

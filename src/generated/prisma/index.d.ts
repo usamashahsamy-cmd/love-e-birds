@@ -56308,7 +56308,6 @@ export namespace Prisma {
 
   export type ActivityParticipationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    activityId_userId?: ActivityParticipationActivityIdUserIdCompoundUniqueInput
     AND?: ActivityParticipationWhereInput | ActivityParticipationWhereInput[]
     OR?: ActivityParticipationWhereInput[]
     NOT?: ActivityParticipationWhereInput | ActivityParticipationWhereInput[]
@@ -56324,7 +56323,7 @@ export namespace Prisma {
     activity?: XOR<ActivityScalarRelationFilter, ActivityWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
-  }, "id" | "activityId_userId">
+  }, "id">
 
   export type ActivityParticipationOrderByWithAggregationInput = {
     id?: SortOrder
@@ -62112,11 +62111,6 @@ export namespace Prisma {
     in?: $Enums.ParticipationStatus[] | ListEnumParticipationStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.ParticipationStatus[] | ListEnumParticipationStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumParticipationStatusFilter<$PrismaModel> | $Enums.ParticipationStatus
-  }
-
-  export type ActivityParticipationActivityIdUserIdCompoundUniqueInput = {
-    activityId: string
-    userId: string
   }
 
   export type ActivityParticipationCountOrderByAggregateInput = {

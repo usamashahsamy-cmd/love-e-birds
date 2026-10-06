@@ -94,12 +94,7 @@ export async function participate(input: {
   const ticketCost = product.ticketCost;
   const totalCost = ticketCost * qty;
 
-  const existing = await prisma.activityParticipation.findUnique({
-    where: { activityId_userId: { activityId: input.activityId, userId } },
-  });
-  if (existing && existing.status !== "CANCELLED") {
-    return { success: false, error: "You have already participated in this activity" };
-  }
+  // Multiple participations allowed per user per activity
 
   const wallet = await prisma.wallet.findUnique({ where: { userId } });
   const balance = wallet ? toNumber(wallet.balance) : 0;
@@ -119,28 +114,17 @@ export async function participate(input: {
       });
       const balanceAfter = toNumber(updated.balance);
 
-      const participation = existing
-        ? await tx.activityParticipation.update({
-            where: { id: existing.id },
-            data: {
-              productId: product.id,
-              quantity: qty,
-              ticketCost,
-              totalCost,
-              status: "CONFIRMED",
-            },
-          })
-        : await tx.activityParticipation.create({
-            data: {
-              activityId: input.activityId,
-              userId,
-              productId: product.id,
-              quantity: qty,
-              ticketCost,
-              totalCost,
-              status: "CONFIRMED",
-            },
-          });
+      const participation = await tx.activityParticipation.create({
+        data: {
+          activityId: input.activityId,
+          userId,
+          productId: product.id,
+          quantity: qty,
+          ticketCost,
+          totalCost,
+          status: "CONFIRMED",
+        },
+      });
 
       await tx.walletTransaction.create({
         data: {

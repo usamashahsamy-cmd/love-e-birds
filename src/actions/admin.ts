@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -356,6 +357,31 @@ export async function updateUserAvatar(userId: string, avatarUrl: string) {
     return { success: true };
   } catch {
     return { success: false, error: "Failed to update avatar" };
+  }
+}
+
+export async function resetUserPassword(targetUserId: string, newPassword: string) {
+  const admin = await requireAdmin();
+  if (targetUserId === admin.id) {
+    return { success: false, error: "You can't change your own password" };
+  }
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Password must be at least 6 characters" };
+  }
+
+  try {
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: targetUserId },
+        data: { passwordHash: hashed },
+      });
+      await logAdminAction(tx, admin.id, "RESET_USER_PASSWORD", "User", targetUserId, {});
+    });
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Action failed" };
   }
 }
 
